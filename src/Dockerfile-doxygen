@@ -7,13 +7,16 @@ RUN apt-get update && \
     apt-get install -qq -y --no-install-recommends ninja-build wget bzip2 binutils binutils-common make libpath-tiny-perl \
         gcc-10 g++-10 \
         flex bison graphviz flex unzip \
-        default-jre \
         manpages- manpages-dev- \
         texlive-base texlive-bibtex-extra texlive-binaries \
         texlive-extra-utils texlive-fonts-recommended texlive-font-utils texlive-fonts-extra-links \
         texlive-formats-extra texlive-lang-english texlive-latex-base \
         texlive-latex-extra texlive-latex-recommended texlive-metapost \
-        texlive-plain-generic texlive-pstricks texlive-xetex ghostscript fonts-inconsolata && \
+        texlive-plain-generic texlive-pstricks texlive-xetex ghostscript fonts-inconsolata
+
+RUN apt-get update && \
+    apt-get install -qq -y --no-install-recommends \
+        default-jre && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
