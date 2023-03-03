@@ -15,9 +15,7 @@ RUN apt-get update && \
         texlive-extra-utils texlive-fonts-recommended texlive-font-utils texlive-fonts-extra-links \
         texlive-formats-extra texlive-lang-english texlive-latex-base \
         texlive-latex-extra texlive-latex-recommended texlive-metapost \
-        texlive-plain-generic texlive-pstricks texlive-xetex ghostscript fonts-inconsolata
-
-RUN apt-get install -qq -y --no-install-recommends \
+        texlive-plain-generic texlive-pstricks texlive-xetex ghostscript fonts-inconsolata \
         default-jre && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -37,20 +35,8 @@ ENV PATH="/opt/cmake-${CMAKE_VER}-linux-x86_64/bin:${PATH}" \
     PLANTUML_JAR_PATH="/opt/plantuml/plantuml.jar" \
     DOT_PATH=/usr/bin/dot
 
-#WORKDIR /home/doxygen
-#RUN wget https://github.com/doxygen/doxygen/archive/refs/tags/Release_${DOXYGEN_VER}.tar.gz -O Release_${DOXYGEN_VER}.tar.gz -q --no-check-certificate && \
-#    tar -zxf Release_${DOXYGEN_VER}.tar.gz && \
-#    cd doxygen-Release_${DOXYGEN_VER} && \
-#    mkdir build && \
-#    cd build && \
-#    cmake -Dbuild_doc=OFF -G "Unix Makefiles" .. && \
-#    make && \
-#    make install && \
-#    cd /home && \
-#    rm -rf doxygen
-
-RUN mkdir -p /opt/doxygen &&\
-    wget https://www.doxygen.nl/files/doxygen-${DOXYGEN_VER}.linux.bin.tar.gz -O doxygen.tar.gz -q --no-check-certificate && \
+WORKDIR /home/doxygen
+RUN wget https://www.doxygen.nl/files/doxygen-${DOXYGEN_VER}.linux.bin.tar.gz -O doxygen.tar.gz -q --no-check-certificate && \
     tar -zxf doxygen.tar.gz && \
     cd doxygen-${DOXYGEN_VER} && \
     make install && \
@@ -59,23 +45,6 @@ RUN mkdir -p /opt/doxygen &&\
 
 
 WORKDIR ~
-#RUN wget https://mirrors.ctan.org/fonts/cascadia-code.zip -O cascadia-code.zip -q --no-check-certificate && \
-#    unzip cascadia-code.zip && \
-#    ls -la && \
-#    mkdir -p /usr/share/texlive/texmf-local/ && \
-#    mv cascadia-code/ /usr/share/texlive/texmf-local/ && \
-#    cd /usr/share/texlive/texmf-local/ && \
-#    texhash && \
-#    updmap-sys
-
-#RUN wget https://mirrors.ctan.org/fonts/inconsolata.zip -O inconsolata.zip -q --no-check-certificate && \
-#    unzip inconsolata.zip && \
-#    ls -la && \
-#    mkdir -p /usr/share/texlive/texmf-local/ && \
-#    mv inconsolata/ /usr/share/texlive/texmf-local/ && \
-#    cd /usr/share/texlive/texmf-local/ && \
-#    texhash --verbose /usr/share/texlive
-#    #updmap-sys --syncwithtrees
 
 RUN echo pdftexDownloadBase14 false>>/etc/texmf/web2c/updmap.cfg && \
     updmap-sys
