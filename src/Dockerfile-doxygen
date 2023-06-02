@@ -4,8 +4,8 @@ FROM debian:bookworm-slim
 LABEL Description="Image for generating doxygen files from CMake including support for plantuml diagrams and output to PDF" \
       maintainer="Rob McKay"
 
-ARG CMAKE_VER=3.25.2
-ARG DOXYGEN_VER=1.9.6
+ARG CMAKE_VER=3.25.3
+ARG DOXYGEN_VER=1.9.7
 
 RUN apt-get update && \
     apt-get install -qq -y --no-install-recommends ninja-build wget bzip2 binutils binutils-common make libpath-tiny-perl \
