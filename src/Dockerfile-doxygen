@@ -1,26 +1,29 @@
-FROM debian:stable-slim
+FROM debian:bookworm-slim
+
 
 LABEL Description="Image for generating doxygen files from CMake including support for plantuml diagrams and output to PDF" \
       maintainer="Rob McKay"
 
+ARG CMAKE_VER=3.25.3
+ARG DOXYGEN_VER=1.9.7
+
 RUN apt-get update && \
     apt-get install -qq -y --no-install-recommends ninja-build wget bzip2 binutils binutils-common make libpath-tiny-perl \
-        gcc-10 g++-10 \
         flex bison graphviz flex unzip \
-        default-jre \
         manpages- manpages-dev- \
         texlive-base texlive-bibtex-extra texlive-binaries \
         texlive-extra-utils texlive-fonts-recommended texlive-font-utils texlive-fonts-extra-links \
         texlive-formats-extra texlive-lang-english texlive-latex-base \
         texlive-latex-extra texlive-latex-recommended texlive-metapost \
-        texlive-plain-generic texlive-pstricks texlive-xetex ghostscript fonts-inconsolata && \
+        texlive-plain-generic texlive-pstricks texlive-xetex ghostscript fonts-inconsolata \
+        default-jre && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.2-linux-x86_64.sh -O cmake-linux-x86_64.sh -q --no-check-certificate && \
+RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VER}/cmake-${CMAKE_VER}-linux-x86_64.sh -O cmake-linux-x86_64.sh -q --no-check-certificate && \
     chmod +x cmake-linux-x86_64.sh && \
     ./cmake-linux-x86_64.sh --prefix=/opt --include-subdir --skip-licence && \
     rm cmake-linux-x86_64.sh
@@ -28,41 +31,20 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.2
 RUN mkdir -p /opt/plantuml &&\
     wget https://github.com/plantuml/plantuml/releases/download/v1.2021.16/plantuml-1.2021.16.jar -O /opt/plantuml/plantuml.jar -q --no-check-certificate 
 
-ENV PATH="/opt/cmake-3.25.2-linux-x86_64/bin:${PATH}" \
+ENV PATH="/opt/cmake-${CMAKE_VER}-linux-x86_64/bin:${PATH}" \
     PLANTUML_JAR_PATH="/opt/plantuml/plantuml.jar" \
-    CC=gcc-10 CXX=g++-10 DOT_PATH=/usr/bin/dot
+    DOT_PATH=/usr/bin/dot
 
 WORKDIR /home/doxygen
-RUN wget https://github.com/doxygen/doxygen/archive/refs/tags/Release_1_9_6.tar.gz -O Release_1_9_6.tar.gz -q --no-check-certificate && \
-    tar -zxf Release_1_9_6.tar.gz && \
-    cd doxygen-Release_1_9_6 && \
-    mkdir build && \
-    cd build && \
-    cmake -Dbuild_doc=OFF -G "Unix Makefiles" .. && \
-    make && \
+RUN wget https://www.doxygen.nl/files/doxygen-${DOXYGEN_VER}.linux.bin.tar.gz -O doxygen.tar.gz -q --no-check-certificate && \
+    tar -zxf doxygen.tar.gz && \
+    cd doxygen-${DOXYGEN_VER} && \
     make install && \
     cd /home && \
     rm -rf doxygen
 
 
 WORKDIR ~
-#RUN wget https://mirrors.ctan.org/fonts/cascadia-code.zip -O cascadia-code.zip -q --no-check-certificate && \
-#    unzip cascadia-code.zip && \
-#    ls -la && \
-#    mkdir -p /usr/share/texlive/texmf-local/ && \
-#    mv cascadia-code/ /usr/share/texlive/texmf-local/ && \
-#    cd /usr/share/texlive/texmf-local/ && \
-#    texhash && \
-#    updmap-sys
-
-#RUN wget https://mirrors.ctan.org/fonts/inconsolata.zip -O inconsolata.zip -q --no-check-certificate && \
-#    unzip inconsolata.zip && \
-#    ls -la && \
-#    mkdir -p /usr/share/texlive/texmf-local/ && \
-#    mv inconsolata/ /usr/share/texlive/texmf-local/ && \
-#    cd /usr/share/texlive/texmf-local/ && \
-#    texhash --verbose /usr/share/texlive
-#    #updmap-sys --syncwithtrees
 
 RUN echo pdftexDownloadBase14 false>>/etc/texmf/web2c/updmap.cfg && \
     updmap-sys
