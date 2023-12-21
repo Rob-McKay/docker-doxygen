@@ -4,5 +4,5 @@ This repo contains the build script and docker scripts used to create the rmckay
 
 | Image                    | Build script     | Dockerfile              |
 |--------------------------|------------------|-------------------------|
-| rmckaykm/doxygen:1.9.6   | build-doxygen.sh | src/Dockerfile-doxygen  |
+| rmckaykm/doxygen:1.9.8   | build-doxygen.sh | src/Dockerfile-doxygen  |
 
